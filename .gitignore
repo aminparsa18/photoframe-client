@@ -40,3 +40,7 @@ __screenshots__/
 
 test-results/
 playwright-report/
+
+# Calendar sync (personal data, fetched at runtime — see README)
+calendar-data/
+.env.calendar

@@ -71,3 +71,24 @@ npm run test:e2e -- --debug
 ```sh
 npm run lint
 ```
+
+## Calendar agenda setup
+
+The dashboard's "Today" panel reads events from a Google Calendar's private, read-only iCal feed — no sign-in on the device, no OAuth. Setup:
+
+1. In Google Calendar, go to **Settings** → your calendar → **Integrate calendar** → copy the **Secret address in iCal format**. Treat this URL as a secret — anyone with it can read your calendar.
+2. Create a git-ignored `.env.calendar` file in the project root:
+   ```
+   CALENDAR_ICS_URL=https://calendar.google.com/calendar/ical/.../private-.../basic.ics
+   ```
+3. Run the sync once to confirm it works:
+   ```sh
+   npm run sync-calendar
+   ```
+   This writes `calendar-data/calendar.ics`, which the dev/preview server serves same-origin at `/calendar.ics` (see the `serveCalendarIcs` plugin in `vite.config.ts`). The app never talks to Google directly — Google's feed has no CORS headers, so a browser fetch would fail; the sync script runs server-side instead.
+4. On the Pi, schedule the sync on a cron job (every 15–30 min is plenty — Google's own feed is best-effort and doesn't update in real time, so polling faster doesn't buy freshness):
+   ```
+   */20 * * * * cd /path/to/photoframe-client && node --env-file-if-exists=.env.calendar scripts/sync-calendar.mjs >> calendar-data/sync.log 2>&1
+   ```
+
+Until `calendar-data/calendar.ics` exists, the panel shows "Calendar not connected yet."

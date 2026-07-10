@@ -1,0 +1,57 @@
+@import '@fontsource-variable/inter';
+
+:root {
+  --color-bg-start: #05060a;
+  --color-bg-mid: #131a2b;
+  --color-bg-end: #1a1030;
+  --color-accent: #8ab4ff;
+  --color-accent-soft: rgba(138, 180, 255, 0.16);
+  --color-accent-day: #ffc069;
+  --color-accent-night: #8ab4ff;
+  --color-text-primary: #f5f6fa;
+  --color-text-secondary: rgba(245, 246, 250, 0.62);
+  --color-text-tertiary: rgba(245, 246, 250, 0.4);
+  --color-warning: #ffb86b;
+  --color-glass-bg: rgba(255, 255, 255, 0.06);
+  --color-glass-border: rgba(255, 255, 255, 0.14);
+  --radius-card: clamp(18px, 2vw, 28px);
+  --blur-glass: 24px;
+  --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background:
+    radial-gradient(circle at 20% 20%, var(--color-bg-mid), transparent 60%),
+    radial-gradient(circle at 80% 75%, var(--color-accent-soft), transparent 55%),
+    linear-gradient(160deg, var(--color-bg-start), var(--color-bg-end));
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  height: 100dvh;
+}
+
+@supports not (height: 100dvh) {
+  #app {
+    height: 100vh;
+  }
+}
