@@ -1,76 +1,15 @@
 # photoframe-client
 
-This template should help get you started developing with Vue 3 in Vite.
+A Vue 3 + Vite + Pinia + TypeScript client for a dedicated desktop photo-frame gadget: a Raspberry Pi driving a 10-inch landscape screen, running full-screen/always-on in a kiosk browser. It's not a typical interactive webpage — no scrolling, no text selection, no cursor.
+
+The device has three views:
+- **Dashboard** (default) — live world clock, current weather, and a "Today" calendar agenda pulled from a private Google Calendar iCal feed.
+- **Slideshow / album** (`/album`) — full-bleed photo slideshow with import/remove, stored locally in IndexedDB.
+- **Voice assistant** — say "Hey Nick" to open a full-screen orb UI that listens for a question and answers it via the OpenAI API, spoken aloud.
 
 ## Recommended IDE Setup
 
 [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Playwright](https://playwright.dev)
-
-```sh
-# Install browsers for the first run
-npx playwright install
-
-# When testing on CI, must build the project first
-npm run build
-
-# Runs the end-to-end tests
-npm run test:e2e
-# Runs the tests only on Chromium
-npm run test:e2e -- --project=chromium
-# Runs the tests of a specific file
-npm run test:e2e -- tests/example.spec.ts
-# Runs the tests in debug mode
-npm run test:e2e -- --debug
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
 
 ## Calendar agenda setup
 
@@ -92,3 +31,18 @@ The dashboard's "Today" panel reads events from a Google Calendar's private, rea
    ```
 
 Until `calendar-data/calendar.ics` exists, the panel shows "Calendar not connected yet."
+
+## Voice assistant setup
+
+Saying "Hey Nick" opens the assistant view, listens for a question, and sends it to the OpenAI Chat Completions API (`gpt-4o-mini`, streamed), then reads the reply aloud with the browser's speech synthesis. Setup:
+
+1. Create an API key at [platform.openai.com](https://platform.openai.com/api-keys).
+2. Add it to the git-ignored `.env.local` file in the project root (already scaffolded, just fill in the value):
+   ```
+   VITE_OPENAI_API_KEY=sk-...
+   ```
+3. Restart `npm run dev` so Vite picks up the new env var.
+
+The key is bundled into the client-side JS and called directly from the browser — acceptable here since this is a single-user local kiosk, not a public-facing app. Don't reuse this pattern for anything with untrusted visitors.
+
+Without a key configured, the assistant view still opens on the wake word but shows an error after listening, since the OpenAI request fails immediately.
